@@ -44,6 +44,24 @@ public class Target : MonoBehaviour
     void FixedUpdate()
     {
         GetComponent<Renderer>().material.color = stateColors[(int)m_nState];
+
+        switch(m_nState)
+        {
+        case eState.kIdle:
+            //Get distance from player and begin hop if necessary
+            break;
+        case eState.kHopStart:
+            //Determine which direction to hop and values
+            break;
+        case eState.kHop:
+            //Perform hop
+            break;
+        case eState.kCaught:
+            //Attached to player, nothing to do
+            break;
+        default:
+            break;
+        }
     }
 
     void OnTriggerStay2D(Collider2D collision)
