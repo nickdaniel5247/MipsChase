@@ -164,8 +164,7 @@ public class Player : MonoBehaviour
             break;
         case eState.kDiving:
             //Perform dive
-            float distCovered = (Time.time - m_fDiveStartTime) * (m_fDiveDistance / m_fDiveTime);
-            float percentCompleted = distCovered / m_fDiveDistance;
+            float percentCompleted = (Time.time - m_fDiveStartTime) / m_fDiveTime;
             transform.position = Vector3.Lerp(m_vDiveStartPos, m_vDiveEndPos, percentCompleted);
 
             if (percentCompleted >= 1.0f)
