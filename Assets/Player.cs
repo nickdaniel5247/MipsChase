@@ -59,7 +59,7 @@ public class Player : MonoBehaviour
 
             //Store starting parameters.
             m_vDiveStartPos = transform.position;
-            m_vDiveEndPos = m_vDiveStartPos - (transform.right * m_fDiveDistance);
+            m_vDiveEndPos = m_vDiveStartPos - (transform.up * m_fDiveDistance);
             m_fDiveStartTime = Time.time;
         }
     }
@@ -108,6 +108,11 @@ public class Player : MonoBehaviour
 
         //Prefab has player pointing downwards from the up direction so -transform.up is used
         transform.Translate(-transform.up * m_fSpeed * Time.fixedDeltaTime, Space.World);
+    }
+
+    void Update()
+    {
+        CheckForDive();
     }
 
     void FixedUpdate()
@@ -159,9 +164,23 @@ public class Player : MonoBehaviour
             break;
         case eState.kDiving:
             //Perform dive
+            float distCovered = (Time.time - m_fDiveStartTime) * (m_fDiveDistance / m_fDiveTime);
+            float percentCompleted = distCovered / m_fDiveDistance;
+            transform.position = Vector3.Lerp(m_vDiveStartPos, m_vDiveEndPos, percentCompleted);
+
+            if (percentCompleted >= 1.0f)
+            {
+                m_nState = eState.kRecovering;
+            }
+
             break;
         case eState.kRecovering:
             //Wait for recovery time to pass then swtich back to slow movement
+            if (Time.time >= (m_fDiveStartTime + m_fDiveTime + m_fDiveRecoveryTime))
+            {
+                m_nState = eState.kMoveSlow;
+            }
+            
             break;
         default:
             break;
