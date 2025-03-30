@@ -62,6 +62,17 @@ public class Target : MonoBehaviour
         m_vScreenSize.y -= m_fBorderOffset;
     }
 
+    bool IsValidHop(Vector3 hopEndPos)
+    {
+        if (hopEndPos.x > m_vScreenSize.x || hopEndPos.y > m_vScreenSize.y 
+        || hopEndPos.x < -m_vScreenSize.x || hopEndPos.y < -m_vScreenSize.y)
+        {
+            return false;
+        }
+        else
+            return true;
+    }
+
     Intersection CalculateIntersectionOffset(float position, float screenSize)
     {
         float constant = 0f;
@@ -95,13 +106,12 @@ public class Target : MonoBehaviour
         m_vHopEndPos = playerDirection * m_fHopSpeed * m_fHopTime + m_vHopStartPos;
 
         //Verify movement
-        if (m_vHopEndPos.x > m_vScreenSize.x || m_vHopEndPos.y > m_vScreenSize.y 
-        || m_vHopEndPos.x < -m_vScreenSize.x || m_vHopEndPos.y < -m_vScreenSize.y)
+        if (IsValidHop(m_vHopEndPos))
         {
-            m_vHopEndPos = transform.position;
-        }
-        else
             return;
+        }
+        
+        m_vHopEndPos = transform.position;
 
         //If not possible, then determine what intersections are made with the walls and our hop radius
         //Intersections on the x axis are: (c, y_0 +- sqrt(r^2 - (x_0 - c)^2))
@@ -123,12 +133,33 @@ public class Target : MonoBehaviour
             intersections[3] = new Vector3(transform.position.x - yAxisOffset.offset, yAxisOffset.constant, 0f);
         }
 
+        //From there, find the furtherest intersection from player, thats valid, to hop towards
+        Vector3 chosen = Vector3.zero;
+        float maxDistance = 0f;
+
         foreach (Vector3 vector in intersections)
         {
-            Debug.DrawLine(transform.position, vector);
+            if (vector == Vector3.zero || !IsValidHop(vector))
+            {
+                continue;
+            }
+
+            float distance = Vector3.Distance(vector, m_player.transform.position);
+
+            if (distance > maxDistance)
+            {
+                maxDistance = distance;
+                chosen = vector;
+            }
         }
 
-        //From there, find the furtherest intersection from player, thats valid, to hop towards
+        //Shouldn't be possible, at minimum there will always be 2 valid positions
+        if (chosen == Vector3.zero)
+        {
+            Debug.LogError("Couldn't find valid path!");
+        }
+
+        m_vHopEndPos = chosen;
     }
 
     void FixedUpdate()
