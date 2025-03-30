@@ -100,6 +100,7 @@ public class Target : MonoBehaviour
     void DetermineHop()
     {
         m_vHopStartPos = transform.position;
+        m_fHopStart = Time.time;
 
         //Try to move directly opposite to the player
         Vector3 playerDirection = (transform.position - m_player.transform.position).normalized;
@@ -177,14 +178,20 @@ public class Target : MonoBehaviour
 
             break;
         case eState.kHopStart:
-            //Determine which direction to hop and values
+            //Determine where to hop
             DetermineHop();
             m_nState = eState.kHop;
             break;
         case eState.kHop:
             //Perform hop
-            transform.position = m_vHopEndPos;
-            m_nState = eState.kIdle;
+            float percentCompleted = (Time.time - m_fHopStart) / m_fHopTime;
+            transform.position = Vector3.Lerp(m_vHopStartPos, m_vHopEndPos, percentCompleted);
+
+            if (percentCompleted >= 1.0f)
+            {
+                m_nState = eState.kIdle;
+            }
+
             break;
         case eState.kCaught:
             //Attached to player, nothing to do
