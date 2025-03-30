@@ -102,5 +102,23 @@ public class Player : MonoBehaviour
     void FixedUpdate()
     {
         GetComponent<Renderer>().material.color = stateColors[(int)m_nState];
+
+        switch(m_nState)
+        {
+        case eState.kMoveSlow:
+            //Listen for dive or just move slowly in mouse direction until speed has surpassed slow speed
+            break;
+        case eState.kMoveFast:
+            //Move fast until direction is outside of fast range, then slow down and switch to kMoveSlow
+            break;
+        case eState.kDiving:
+            //Perform dive
+            break;
+        case eState.kRecovering:
+            //Wait for recovery time to pass then swtich back to slow movement
+            break;
+        default:
+            break;
+        }
     }
 }
