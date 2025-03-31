@@ -112,7 +112,10 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        CheckForDive();
+        if (m_nState == eState.kMoveSlow)
+        {
+            CheckForDive();
+        }
     }
 
     void FixedUpdate()
