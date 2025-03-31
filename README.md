@@ -4,3 +4,8 @@ The hop algorithm consists of first trying to hop directly opposite from the pla
 ## Example Gameplay
 
 https://youtu.be/uUMpCuUShOE
+
+
+## Note
+
+FixedUpdate is used in my code since it was set up that way by the professor. I'm not sure if the idea was for everything to go in there but I put everything inside just in case, even though it's not necessary, since it was the provided update function. Inputs are still polled in regular Update though.
