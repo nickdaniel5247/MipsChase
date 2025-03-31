@@ -42,6 +42,7 @@ public class Target : MonoBehaviour
     public float m_fScaredDistance = 3.0f;
     public int m_nMaxMoveAttempts = 50;
     public float m_fBorderOffset = 0.5f;
+    public float m_fCorneredRandomness = 0.25f;
 
     //Internal variables.
     public eState m_nState;
@@ -95,6 +96,16 @@ public class Target : MonoBehaviour
         }
 
         return new Intersection(false, 0f, 0f);
+    }
+
+    //Returns angle between two vectors with range [180, 540]
+    float GetAngle(Vector3 source, Vector3 target)
+    {
+        Vector2 direction = (target - source).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        //Add 360 to create positive only angles
+        return angle + 360f;
     }
 
     void DetermineHop()
@@ -158,6 +169,32 @@ public class Target : MonoBehaviour
         if (chosen == Vector3.zero)
         {
             Debug.LogError("Couldn't find valid path!");
+        }
+
+        m_vHopEndPos = chosen;
+
+        //Add some randomness by interpolating between the angle of chosen vector and the angle of center
+        float angle = GetAngle(m_vHopStartPos, m_vHopEndPos);
+        float zeroAngle = GetAngle(m_vHopStartPos, Vector3.zero);
+        angle = Mathf.Lerp(angle, zeroAngle, m_fCorneredRandomness);
+        
+        //Incorporate randomly chosen direction
+        float x = Mathf.Cos(angle * Mathf.Deg2Rad);
+        float y = Mathf.Sin(angle * Mathf.Deg2Rad);
+        chosen = new Vector3(x, y, 0f);
+
+        //Add magnitude of chosen hop
+        Vector3 movement = m_vHopEndPos - m_vHopStartPos;
+        chosen *= movement.magnitude;
+
+        //Add start position to make this an end position
+        chosen += m_vHopStartPos;
+
+        //Not all random directions will be valid due to the range of angles wanted in each unique position
+        //If not valid, fall back to desired path
+        if (!IsValidHop(chosen))
+        {
+            return;
         }
 
         m_vHopEndPos = chosen;
