@@ -254,7 +254,7 @@ public class Target : MonoBehaviour
             {
                 m_nState = eState.kCaught;
                 transform.parent = m_player.transform;
-                transform.localPosition = new Vector3(0.0f, -0.5f, 0.0f);
+                transform.localPosition = new Vector3(0.3f, 0.3f, 0.0f);
             }
         }
     }
