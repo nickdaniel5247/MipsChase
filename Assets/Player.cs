@@ -5,7 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     //External tunables.
-    static public float m_fMaxSpeed = 5.0f;
+    static public float m_fMaxSpeed = 6.0f;
     public float m_fSlowSpeed = m_fMaxSpeed * 0.66f;
     public float m_fIncSpeed = 10f;
     public float m_fMagnitudeFast = 0.6f;
